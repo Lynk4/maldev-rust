@@ -29,7 +29,7 @@
 
 | 🔖 **Topic** | 🎯 **Goal** | 🔑 **Key APIs** |
 |-----------|----------|-------------|
-| 🦀 **Rust FFI & Unsafe** | **Call `MessageBoxW` from Rust** | **`MessageBoxW`, `w!` macro** |
+| 🦀 [**Rust FFI & Unsafe**](https://github.com/Lynk4/maldev-rust/tree/main/Calling%20WinAPI%20from%20Rust) | **Call `MessageBoxW` from Rust** | **`MessageBoxW`, `w!` macro** |
 | ⚙️ **Process Enumeration** | **List all PIDs + names** | **`EnumProcesses`, `QueryFullProcessImageNameW`** |
 
 ---
