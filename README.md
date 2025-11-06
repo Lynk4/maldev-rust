@@ -14,6 +14,11 @@
 
 ---
 
+![Anime Upset Gif](https://github.com/user-attachments/assets/e917bde4-544b-4eae-8ca8-6e5949751b9c)
+
+
+---
+
 <div align="left">
 
 # 🦀 maldev-rust
