@@ -27,10 +27,10 @@
 ---
 ## 🧩 Topics & Quick Reference
 
-| 🔖 Topic | 🎯 Goal | 🔑 Key APIs |
+| 🔖 **Topic** | 🎯 **Goal** | 🔑 **Key APIs** |
 |-----------|----------|-------------|
-| 🦀 Rust FFI & Unsafe | Call `MessageBoxW` from Rust | `MessageBoxW`, `w!` macro |
-| ⚙️ Process Enumeration | List all PIDs + names | `EnumProcesses`, `QueryFullProcessImageNameW` |
+| 🦀 **Rust FFI & Unsafe** | **Call `MessageBoxW` from Rust** | **`MessageBoxW`, `w!` macro** |
+| ⚙️ **Process Enumeration** | **List all PIDs + names** | **`EnumProcesses`, `QueryFullProcessImageNameW`** |
 
 ---
 
