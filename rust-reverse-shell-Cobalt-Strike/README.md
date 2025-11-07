@@ -117,9 +117,11 @@ cargo build --target x86_64-pc-windows-gnu --release
 
 <img width="1184" height="623" alt="Screenshot 2025-11-07 at 11 43 10 AM" src="https://github.com/user-attachments/assets/a1090306-73e9-4b09-8258-bcd76df90b24" />
 
+---
+
 ### DIE Detect it easy
 
-- #### Open the binary in die.
+- #### Open the exe in die.
 
 <div align=center />
 
