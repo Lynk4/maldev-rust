@@ -20,6 +20,12 @@
 - **Extract shellcode using python**
    use ```rust-shellcode-extract.py``` file to extract shellcode from .bin file.
 
+### You can use this python one liner.
+
+```bash
+python3 -c "import sys; data=open('payload_x64.bin','rb').read(); print('let payload: &[u8] = &[' + ', '.join(f'0x{b:02x}' for b in data) + '];')" > payload_line.rs
+```
+
 
 ---
 ## 🛡️ **Rust shellcode runner.**
