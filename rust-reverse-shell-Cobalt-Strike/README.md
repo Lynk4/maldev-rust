@@ -144,11 +144,14 @@ cargo build --target x86_64-pc-windows-gnu --release
 
 ---
 
-#### Change ```Subsystem``` Value initially it was 0003 make it 0002. That's it windows gui is gone............................
+#### Change ```Subsystem``` Value initially it was 0003 make it 0002.
+---
+
+<img width="1352" height="515" alt="Screenshot 2025-11-09 at 1 29 03 PM" src="https://github.com/user-attachments/assets/6ee419ee-a4d4-4942-8a02-2cbbff26d1a8" />
 
 ---
 
+### That's it windows gui is gone............................
 
-
-
+---
 
