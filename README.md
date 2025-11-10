@@ -36,6 +36,11 @@
 |-----------|----------|-------------|
 | 🦀 [**Rust FFI & Unsafe**](https://github.com/Lynk4/maldev-rust/tree/main/Calling%20WinAPI%20from%20Rust) | **Call `MessageBoxW` from Rust** | **`MessageBoxW`, `w!` macro** |
 | ⚙️ [**Process Enumeration**](https://github.com/Lynk4/maldev-rust/tree/main/process%20enumeration) | **List all PIDs + names** | **`EnumProcesses`, `QueryFullProcessImageNameW`** |
+| 🕶️ [**Stealth Process Spawning**](https://github.com/Lynk4/maldev-rust/tree/main/Stealth%20Process%20Spawning) | **Launch hidden `calc.exe`** | **`CreateProcessW`, `CREATE_NO_WINDOW`** | 
+
+
+
+
 
 ---
 
