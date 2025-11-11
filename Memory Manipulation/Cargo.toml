@@ -1,0 +1,15 @@
+[package]
+name = "memory_master"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+winapi = { version = "0.3", features = [
+    "tlhelp32",
+    "processthreadsapi",
+    "memoryapi",
+    "winnt",
+    "handleapi",
+    "synchapi",
+    "libloaderapi"
+]}
