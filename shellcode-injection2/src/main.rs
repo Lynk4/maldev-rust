@@ -9,6 +9,7 @@ use windows_sys::Win32::System::Threading::{CreateThread, WaitForSingleObject};
 
 #[cfg(target_os = "windows")]
 fn main() {
+    //msfvenom -p windows/x64/messagebox TEXT="Hey baby......." TITLE="from Lynk4" -f raw -o shellcode.bin
     let shellcode = include_bytes!("../shellcode.bin");
     let shellcode_size = shellcode.len();
 
