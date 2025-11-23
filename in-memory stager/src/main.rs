@@ -1,4 +1,4 @@
-// THIS LINE IS THE ONLY THING THAT REMOVES THE CONSOLE WINDOW 100%
+// THIS LINE IS THE ONLY THING THAT REMOVES THE CONSOLE WINDOW
 #![cfg_attr(windows, windows_subsystem = "windows")]
 
 use windows::Win32::Foundation::CloseHandle;
