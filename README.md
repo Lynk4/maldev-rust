@@ -43,6 +43,7 @@
 | 🕶️ [**Stealth Process Spawning**](https://github.com/Lynk4/maldev-rust/tree/main/Stealth%20Process%20Spawning) | **Launch hidden `calc.exe`.** | **`CreateProcessW`, `CREATE_NO_WINDOW`** | 
 | 🧠🛠️ [**Memory Manipulation**](https://github.com/Lynk4/maldev-rust/tree/main/Memory%20Manipulation) | **Remote memory allocation.** | **`VirtualAllocEx`, `WriteProcessMemory`, `CreateRemoteThread`, `ReadProcessMemory`** | 
 | 👻💻  [**In-Memory Stager**](https://github.com/Lynk4/maldev-rust/tree/main/in-memory%20stager) | **Silently download & execute a stageless beacon from a remote URL with zero GUI, zero console, zero disk artifacts.** | **`reqwest::blocking::get` → `VirtualAlloc` → `copy_nonoverlapping` → `CreateThread` → `WaitForSingleObject(INFINITE)` → `CloseHandle` + `VirtualFree`** | 
+| 🌀  [**APC Injection**](https://github.com/Lynk4/maldev-rust/tree/main/apc) | **Shellcode runs inside the process using only one APC, no new thread created** | **`VirtualAllocEx`, `QueueUserAPC`** | 
 
 
 
