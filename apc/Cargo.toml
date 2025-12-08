@@ -1,0 +1,15 @@
+[package]
+name = "apc_injection"
+version = "0.7.1"
+edition = "2021"
+
+[dependencies]
+winapi = { version = "0.3.9", features = [
+    "processthreadsapi",
+    "memoryapi",
+    "winnt",
+    "synchapi",
+    "handleapi",
+    "tlhelp32",
+    "psapi"
+]}
