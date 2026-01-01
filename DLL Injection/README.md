@@ -26,7 +26,7 @@ https://hijacklibs.net/
 
 ### mpclient.dll
 
-This dll is loaded by windows defender is in fact vulnerable to dll hijacking.
+#### This dll is loaded by windows defender is in fact vulnerable to dll hijacking.
 
 There are two executable inside windows defender directory that load or try to load mpclient.dll.
 
@@ -55,7 +55,7 @@ mpclinet.dll present in the original directory. but because we can copy this bin
 
 ![Screenshot 2026-01-01 at 12.58.49 AM.png](DLL%20HIJACKING/Screenshot_2026-01-01_at_12.58.49_AM.png)
 
-We don’t yet know the functions mpcmd or nissrv actually use inside the dll so first thing thing you might try is to write a dll that uses dll main to do what we want. That may not work depending on the dll is used in the binary. But we can always give it a try.
+#### We don’t yet know the functions mpcmd or nissrv actually use inside the dll so first thing thing you might try is to write a dll that uses dll main to do what we want. That may not work depending on the dll is used in the binary. But we can always give it a try.
 
 here we have a evil.dll program in rust.
 
@@ -161,9 +161,9 @@ This time we get.
 
 ![Screenshot 2026-01-01 at 1.17.33 AM.png](DLL%20HIJACKING/Screenshot_2026-01-01_at_1.17.33_AM.png)
 
-So we now know about two different functions that these libraries required and we need to spoof them at least those in order for this to work. 
+#### So we now know about two different functions that these libraries required and we need to spoof them at least those in order for this to work. 
 
-In order for us to understand all of the functions we’re going to need to spoof.
+#### In order for us to understand all of the functions we’re going to need to spoof.
 
 Let’s use cutter to examine these programs.
 
@@ -179,11 +179,11 @@ We don’t need to read assembly for this part.
 
 ---
 
-We don’t know how these functions work together. The safest thing to do is to spoof all of them.
+#### We don’t know how these functions work together. The safest thing to do is to spoof all of them.
 
-First thing we want to do is get list of functions. get it out of cutter into something more usable.
+#### First thing we want to do is get list of functions. get it out of cutter into something more usable.
 
-**Unfortunately we can not copy all these from cutter we have to use PESTUDIO.**
+#### **Unfortunately we can not copy all these from cutter we have to use PESTUDIO.**
 
 Select all the mpclient.dll imports.
 
@@ -407,22 +407,20 @@ And this time we get our popup msg.
 
 ![Screenshot 2026-01-01 at 1.55.49 AM.png](DLL%20HIJACKING/Screenshot_2026-01-01_at_1.55.49_AM.png)
 
-That is how you spoof function that are used by a program when it Imports dll’s.
+### That is how you spoof function that are used by a program when it Imports dll’s.
 
 ---
 
-Observe what it imports then write same functions that call your evil function inside of your rust program or any other language.
+### - Observe what it imports then write same functions that call your evil function inside of your rust program or any other language.
 
 ---
 
-So you may ask hey if we saw that error message when we tried to run MpCmdRun.exe with the dll without these spoofed functions. Couldn’t we just use that entry point and then just spoof that one. Wouldn’t that be enough.
+### So you may ask hey if we saw that error message when we tried to run MpCmdRun.exe with the dll without these spoofed functions. Couldn’t we just use that entry point and then just spoof that one. Wouldn’t that be enough.
 
 ---
 
 Sometimes just doing the entry point is enough but sometimes it isn’t.
-
 let’s demonstrate what happens when we try to do just that.
-
 So we saw in that error message that the entry point we were told about at first was `MpQueryEngineConfigDword`
 
 ```bash
@@ -435,7 +433,7 @@ let’s comment out every other function and rebuild it. copy it over the same d
 
 Execute the MpCmdRun.exe
 
-now we get another error that `MpGetSampleChunk` is missing.
+#### now we get another error that `MpGetSampleChunk` is missing.
 
 ![Screenshot 2026-01-01 at 2.11.57 AM.png](DLL%20HIJACKING/Screenshot_2026-01-01_at_2.11.57_AM.png)
 
@@ -443,7 +441,7 @@ now we get another error that `MpGetSampleChunk` is missing.
 
 so what let’s add `MpGetSampleChunk` and compile it it again.
 
-**I think you can probably see where this is going. We will get a new error.**
+### **I think you can probably see where this is going. We will get a new error.**
 
 **because we don’t really know exactly how the entry point are handled inside the dll at this level. It’s easiest to just take all the Imports and spoof all of them so there’s no questions about what actually needs to be spoofed. Yes it’s a little bit more copy paste but you have the guarantee that you’re going to hit the functions that you need to hit so it’s definitely worth it**
 
@@ -459,11 +457,11 @@ There’s a article from trend micro talks about the Earth Longzhi (a [subgroup 
 
 [Attack on Security Titans: Earth Longzhi Returns With New Tricks](https://www.trendmicro.com/en_us/research/23/e/attack-on-security-titans-earth-longzhi-returns-with-new-tricks.html)
 
-So knowing hot to move from that hijack to actual remote code execution os pretty valuable. One of the most common things you’re going to want to do is to establish a command and control beacon so that we have initial access or persistence. on the target. for simplicity sake i’ll spawn a calculator.
+### So knowing how to move from that hijack to actual remote code execution os pretty valuable. One of the most common things you’re going to want to do is to establish a command and control beacon so that we have initial access or persistence. on the target. for simplicity sake i’ll spawn a calculator.
 
 ## Generate Payload
 
-I’ll be using msfvenom to generate a shellcode will spawn a calculator.
+I’ll be using msfvenom to generate a shellcode which will spawn a calculator.
 
 ```bash
 kant@APPLEs-MacBook-Pro ~/Desktop> /opt/metasploit-framework/bin/msfvenom -p windows/x64/exec CMD=calc.exe -f raw -o shellcode.bin
@@ -480,7 +478,7 @@ Saved as: shellcode.bin
 
 No we’ll modify our evildll code.
 
-lib.rs
+- lib.rs
 
 ```rust
 use windows::{
@@ -625,7 +623,7 @@ extern "system" fn DllMain(
 
 ---
 
-Add bolus to Cargo.toml
+- Add bolus to Cargo.toml
 
 ```toml
 [package]
