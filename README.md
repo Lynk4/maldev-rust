@@ -45,6 +45,7 @@
 | 👻💻  [**In-Memory Stager**](https://github.com/Lynk4/maldev-rust/tree/main/in-memory%20stager) | **Silently download & execute a stageless beacon from a remote URL with zero GUI, zero console, zero disk artifacts.** | **`reqwest::blocking::get` → `VirtualAlloc` → `copy_nonoverlapping` → `CreateThread` → `WaitForSingleObject(INFINITE)` → `CloseHandle` + `VirtualFree`** | 
 | 🌀  [**APC Injection**](https://github.com/Lynk4/maldev-rust/tree/main/apc) | **Shellcode runs inside the process using only one APC, no new thread created** | **`VirtualAllocEx`, `QueueUserAPC`** | 
 | 🌀  [**Shellcode Encryption XOR**](https://github.com/Lynk4/maldev-rust/tree/main/xor%20encryption) | **Shellcode encrypted with xor and ran in the memory** | **`VirtualAlloc`, `MEM_COMMIT` `MEM_RESERVE`, `PAGE_EXECUTE_READWRITE`, `std::ptr::copy_nonoverlapping`, `std::slice::from_raw_parts_mut`, `XOR decryption`, `std::mem::transmute`, `extern "system"`** | 
+| 🧨  [**DLL Injection**](https://github.com/Lynk4/maldev-rust/tree/main/DLL%20Injection) | **Dll injection** | **`DllMain`, `LoadLibraryA`, `LoadLibraryW`, `GetProcAddress`, `MessageBoxA`, `VirtualAlloc`, `VirtualAllocEx`, `VirtualProtect`, `VirtualProtectEx`, `WriteProcessMemory`, `CreateThread`, `CreateRemoteThread`, `NtAllocateVirtualMemory`, `NtWriteVirtualMemory`, `NtCreateThreadEx`, `OpenProcess`, `CloseHandle`** | 
 
 
 
